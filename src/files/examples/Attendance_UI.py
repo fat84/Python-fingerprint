@@ -142,9 +142,9 @@ class EmailVerified(wx.Frame):
             val = dlg.ShowModal()
             dlg.Destroy()
             if(val == wx.ID_OK):
-                heighestId = manage_db.getHighestId()
-                data = Fingerprint_Controller.enrollFinger(heighestId)
-                if(data == heighestId):
+                # heighestId = manage_db.getHighestId()
+                data = Fingerprint_Controller.enrollFinger(user[0])
+                if(data == user[0]):
                     manage_db.registerFinger(self.txt.GetValue(), data)
                     dlg = wx.MessageDialog(self, "Registration completed!", "Registration",
                                            wx.OK)
@@ -155,7 +155,7 @@ class EmailVerified(wx.Frame):
                         new_frame = MainFrame()
                         new_frame.Show()
                         self.Destroy()
-                if (data != heighestId):
+                if (data != user[0]):
                     dlg = wx.MessageDialog(self, "Finger doesn't match!\n\n Please try again", "Registration",
                                            wx.OK)
                     val1 = dlg.ShowModal()
@@ -257,7 +257,7 @@ class ClockinFrame(wx.Frame):
     def clockIn(self,evt):
         self.clockInStatuslbl.SetLabel("")
         if(self.isPassed == False):
-            score = Fingerprint_Controller.clockIn(int(self.userInfo[4]))
+            score = Fingerprint_Controller.clockIn(self.userInfo[0])
             if (score != 0):
                 self.clockInStatuslbl.SetLabel(
                     "Auhorization: Passed! Accuracy score: " + str(score))

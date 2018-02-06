@@ -6,10 +6,15 @@ from pyfingerprint.pyfingerprint import PyFingerprint
 import array
 import string
 
-path = "LOCAL_DB_DIR"
-host = "HOST_URL"
-mySqlUser = "MYSQL_USERNAME"
-mySqlPassword = "MYSQL_PASSWORD"
+# path = "LOCAL_DB_DIR"
+# host = "HOST_URL"
+# mySqlUser = "MYSQL_USERNAME"
+# mySqlPassword = "MYSQL_PASSWORD"
+
+path = "/home/developer/Desktop/localDB/"
+host = "localhost"
+mySqlUser = "root"
+mySqlPassword = "arms1234"
 
 def findUser(userId):
     try:
@@ -32,8 +37,8 @@ def findUser(userId):
         print(e)
         return False
 
-def updateEnroll(userId):
-    query = ("UPDATE `activated` set activated_status = 1 where id = " + str(getArduinoId()[0]) + " and user_id =" + str(userId))
+def updateEnroll(fingerprint,userId):
+    query = ("UPDATE `activated` set activated_status = 1 where id = " + str(fingerprint) + " and user_id =" + str(userId))
     try:
         conn = mysql.connector.connect(host=host,
                                        database='attendance',
@@ -92,22 +97,22 @@ def getNonUserActivated(activatedCode):
         print(e)
         return False
 
-def getHighestId():
-    try:
-        conn = mysql.connector.connect(host=host,
-                                       database='attendance',
-                                       user=mySqlUser,
-                                       password=mySqlPassword)
-
-        if conn.is_connected():
-            cursor = conn.cursor()
-            query = ("SELECT max(finger) FROM attendance.user")
-            cursor.execute(query)
-            result = cursor.fetchone()[0]
-            if(result == None):
-                return 1
-            conn.close()
-            return result
+# def getHighestId():
+#     try:
+#         conn = mysql.connector.connect(host=host,
+#                                        database='attendance',
+#                                        user=mySqlUser,
+#                                        password=mySqlPassword)
+#
+#         if conn.is_connected():
+#             cursor = conn.cursor()
+#             query = ("SELECT max(finger) FROM attendance.user")
+#             cursor.execute(query)
+#             result = cursor.fetchone()[0]
+#             if(result == None):
+#                 return 1
+#             conn.close()
+#             return result
 
     except Error as e:
         print(e)
@@ -317,7 +322,29 @@ def clock_in(sectionlogId,clock_in_sec,finger):
         return status
     except Error as e:
         print(e)
-def registerFinger(id,finger):
+
+def isAllActivated(userId):
+    try:
+        conn = mysql.connector.connect(host=host,
+                                       database='attendance',
+                                       user=mySqlUser,
+                                       password=mySqlPassword)
+
+        if conn.is_connected():
+            cursor = conn.cursor()
+            query = ("SELECT * FROM `activated` WHERE user_id = " + str(userId) + " and activated_status = 1")
+            cursor.execute(query)
+            result = cursor.fetchall()
+            if (len(result) == 0):
+                return True
+            conn.close()
+            return False  # return user tuple from db
+
+    except Error as e:
+        print(e)
+        return False
+
+def registerFinger(userId):
     global conn
     try:
         conn = mysql.connector.connect(host=host,
@@ -329,10 +356,14 @@ def registerFinger(id,finger):
             print('Connected to MySQL database')
         cursor = conn.cursor()
         query = (
-                "UPDATE `user` set finger = '" + str(finger) + "', `activated` = '1', activated_code = '112233' where activated_code = '" + str(id) + "'")
+                "UPDATE `user` set `activated` = b'1', activated_code = '9412' where id = " + str(userId))
         print(query)
         cursor.execute(query)
         conn.commit()
+        if isAllActivated(userId):
+            print(query)
+            cursor.execute(query)
+            conn.commit()
         conn.close()
     except Error as e:
         print(e)
@@ -449,7 +480,7 @@ def getUserByAcCode(code):
         query = ("SELECT * FROM `user` WHERE activated_code = " + str(code))
         print(query)
         cursor.execute(query)
-        user = cursor.fetchall()
+        user = cursor.fetchone()
         if(user.__len__() == 0):
             print("no user found")
             conn.close()
@@ -506,5 +537,5 @@ def calSecStarted(secstart):
 def filter_out_junk(text):
     return ''.join(x for x in text if x in set(string.printable))
 
-# if __name__ == "__main__":
-#     print(findUser(1)[1])
+if __name__ == "__main__":
+    print(registerFinger(1))

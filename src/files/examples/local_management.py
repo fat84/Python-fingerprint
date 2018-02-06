@@ -5,10 +5,10 @@ from mysql.connector import Error
 import datetime as dt
 from manage_db import *
 
-path = "LOCAL_DB_DIR"
-host = "HOST_URL"
-mySqlUser = "MYSQL_USERNAME"
-mySqlPassword = "MYSQL_PASSWORD"
+path = "/home/developer/Desktop/localDB/"
+host = "localhost"
+mySqlUser = "root"
+mySqlPassword = "arms1234"
 
 def updateClockIn():
     while (is_connected() == False):
@@ -74,7 +74,7 @@ def localUpdate():
             if(userFinger == ''):
                 userFinger = '0'
             result = str(users[0]) + "," + str(users[1]) + "," + str(users[2]) + "," + str(
-                users[3] + "," + str(userFinger) +  "," + str(users[5]) + "," + str(users[6]) + "\n")
+                users[3] + "," + str(userFinger) + "," + str(users[5]) + "," + str(users[6]) + "\n")
             file.write(result)
         file.close()
 
