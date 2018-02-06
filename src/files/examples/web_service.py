@@ -42,7 +42,7 @@ while True:
                 data = arduino.readline()[:-2]
                 if (str(data) == "Enroll Done"):
                     print("Done")
-                    manage_db.updateEnroll(manage_db.getArduinoId()[0],user[0])
+                    manage_db.updateEnroll(manage_db.getArduinoId(),user[0])
                     break
 
 # import time

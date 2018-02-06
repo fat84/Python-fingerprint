@@ -38,7 +38,7 @@ def findUser(userId):
         return False
 
 def updateEnroll(fingerprint,userId):
-    query = ("UPDATE `activated` set activated_status = 1 where id = " + str(fingerprint) + " and user_id =" + str(userId))
+    query = ("UPDATE `activated` set activate_status = 1 where id = " + str(fingerprint) + " and user_id =" + str(userId))
     try:
         conn = mysql.connector.connect(host=host,
                                        database='attendance',
@@ -66,11 +66,11 @@ def getArduinoId():
             cursor = conn.cursor()
             query = ("SELECT * FROM `fingerprint` WHERE fingerprint_id = 'arduino'")
             cursor.execute(query)
-            result = cursor.fetchall()
+            result = cursor.fetchone()
             if(len(result) == 0):
                 return 0
             conn.close()
-            return result[0] #return user tuple from db
+            return result[0]
 
     except Error as e:
         print(e)
@@ -538,4 +538,4 @@ def filter_out_junk(text):
     return ''.join(x for x in text if x in set(string.printable))
 
 if __name__ == "__main__":
-    print(registerFinger(1))
+    print(getArduinoId())
